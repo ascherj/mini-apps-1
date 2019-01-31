@@ -14,15 +14,12 @@ var game = {
   boardDiv: document.getElementById('board'),
   status: document.getElementById('status'),
   currentTurn: 'X',
-  currentBoard: {
-    0: [null, null, null],
-    1: [null, null, null],
-    2: [null, null, null]
-  },
+  currentBoard: {},
   winner: undefined,
 
 
   start: () => {
+    game.resetBoard();
     game.currentTurn = 'X';
     render.status(true);
   },
@@ -75,6 +72,22 @@ var game = {
     }
 
     return false;
+  },
+  resetBoard: () => {
+    console.log('clearing board...');
+    game.currentBoard = {
+      0: [null, null, null],
+      1: [null, null, null],
+      2: [null, null, null]
+    };
+
+    for (var i = 0; i < 3; i++) {
+      var currentRow = document.getElementsByTagName('tbody')[0].children[i];
+      for (var j = 0; j < 3; j++) {
+        var currentSquare = currentRow.children[j];
+        currentSquare.innerHTML = '';
+      }
+    }
   }
 };
 
