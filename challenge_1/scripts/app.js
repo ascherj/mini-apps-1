@@ -1,18 +1,26 @@
 var app = {
   init: () => {
     app.setUpEventListeners();
+    game.start()
   },
   setUpEventListeners: () => {
     game.newGameButton.addEventListener('click', handlers.handleNewGameButtonClick);
-    game.board.addEventListener('click', handlers.handleBoardClick);
+    game.boardDiv.addEventListener('click', handlers.handleBoardClick);
   }
-}
+};
 
 var game = {
   newGameButton: document.getElementById('new-game'),
-  board: document.getElementById('board'),
+  boardDiv: document.getElementById('board'),
   status: document.getElementById('status'),
   currentTurn: 'X',
+  currentBoard: {
+    0: [null, null, null],
+    1: [null, null, null],
+    2: [null, null, null]
+  },
+  winner: undefined,
+
 
   start: () => {
     game.currentTurn = 'X';
@@ -20,9 +28,17 @@ var game = {
   },
   switchTurn: () => {
     console.log('switching turn');
-    game.currentTurn = game.currentTurn === 'X' ? 'Y' : 'X';
+    game.currentTurn = game.currentTurn === 'X' ? 'O' : 'X';
   },
   plotMove: (row, col) => {
+    var currentRow = document.getElementsByTagName('tbody')[0].children[row];
+    var currentSquare = currentRow.children[col];
+    currentSquare.innerHTML = game.currentTurn;
+  },
+  updateBoard: (row, col) => {
+    game.currentBoard[row][col] = game.currentTurn;
+  },
+  checkForWinner: () => {
 
   }
 };
@@ -30,7 +46,7 @@ var game = {
 var render = {
   status: () => {
     console.log('rendering status');
-    game.status.textContent = game.currentTurn + '\'s turn';
+    game.status.innerHTML = game.currentTurn + '\'s turn';
   }
 };
 
@@ -47,6 +63,7 @@ var handlers = {
 
     if (row >= 0 && col >= 0) {
       game.plotMove(row, col);
+      game.updateBoard(row, col);
       game.switchTurn();
       render.status();
     }
