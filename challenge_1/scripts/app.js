@@ -24,10 +24,10 @@ var game = {
 
   start: () => {
     game.currentTurn = 'X';
-    render.status();
+    render.status(true);
   },
   switchTurn: () => {
-    console.log('switching turn');
+    console.log('switching turn...');
     game.currentTurn = game.currentTurn === 'X' ? 'O' : 'X';
   },
   plotMove: (row, col) => {
@@ -38,15 +38,55 @@ var game = {
   updateBoard: (row, col) => {
     game.currentBoard[row][col] = game.currentTurn;
   },
-  checkForWinner: () => {
+  isWinner: () => {
+    // check rows
+    for (var i = 0; i < 3; i++) {
+      var row = game.currentBoard[i];
+      var result = false;
 
+      result = row.reduce((accum, col) => {
+        return accum && (col === game.currentTurn);
+      }, true);
+
+      if (result) {
+        return true;
+      }
+    }
+
+    // check cols
+    for (var i = 0; i < 3; i++) {
+      if (game.currentBoard[0][i] === game.currentTurn &&
+          game.currentBoard[1][i] === game.currentTurn &&
+          game.currentBoard[2][i] === game.currentTurn) {
+        return true;
+      }
+    }
+
+    // check diagonals
+    if (game.currentBoard[0][0] === game.currentTurn &&
+        game.currentBoard[1][1] === game.currentTurn &&
+        game.currentBoard[2][2] === game.currentTurn) {
+      return true;
+    }
+    if (game.currentBoard[0][2] === game.currentTurn &&
+        game.currentBoard[1][1] === game.currentTurn &&
+        game.currentBoard[2][0] === game.currentTurn) {
+      return true;
+    }
+
+    return false;
   }
 };
 
 var render = {
-  status: () => {
-    console.log('rendering status');
-    game.status.innerHTML = game.currentTurn + '\'s turn';
+  status: (status) => {
+    console.log('rendering status...');
+    if (status) {
+      game.status.innerHTML = game.currentTurn + '\'s turn';
+    } else {
+      console.log(game.currentTurn, 'WINS!');
+      game.status.innerHTML = game.currentTurn + ' WINS!';
+    }
   }
 };
 
@@ -59,13 +99,18 @@ var handlers = {
     var row = rows[event.target.parentElement.id];
     var col = event.target.cellIndex;
 
-    console.log('Player', game.currentTurn, 'clicked on:', row, col);
+    console.log(game.currentTurn, 'clicked on:', row, col);
 
     if (row >= 0 && col >= 0) {
       game.plotMove(row, col);
       game.updateBoard(row, col);
-      game.switchTurn();
-      render.status();
+
+      if (game.isWinner()) {
+        render.status(false)
+      } else {
+        game.switchTurn();
+        render.status(true);
+      }
     }
   }
 };
