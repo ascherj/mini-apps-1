@@ -15,6 +15,7 @@ table {
 
 th {
   padding-bottom: 15px;
+  font-size: 24px;
 }
 
 #middle-row td {
@@ -28,7 +29,7 @@ td:nth-of-type(2) {
 }
 
 td {
-  font-size: 30px;
+  font-size: 50px;
   text-align: center;
   width: 100px;
   height: 100px;
