@@ -21,7 +21,7 @@ var game = {
   start: () => {
     game.resetBoard();
     game.currentTurn = 'X';
-    render.status(true);
+    game.updateStatus();
   },
   switchTurn: () => {
     game.currentTurn = game.currentTurn === 'X' ? 'O' : 'X';
@@ -30,6 +30,19 @@ var game = {
     var currentRow = game.boardRows[row];
     var currentSquare = currentRow.children[col];
     currentSquare.innerHTML = game.currentTurn;
+  },
+  updateStatus: (status) => {
+    if (status === 'winner') {
+      console.log(game.currentTurn, 'WINS!');
+      game.status.innerHTML = game.currentTurn + ' WINS!';
+
+    } else if (status === 'tie') {
+      console.log('Tie game!');
+      game.status.innerHTML = 'Tie game!';
+
+    } else {
+      game.status.innerHTML = game.currentTurn + '\'s turn';
+    }
   },
   updateBoard: (row, col) => {
     game.currentBoard[row][col] = game.currentTurn;
@@ -104,22 +117,6 @@ var game = {
   }
 };
 
-var render = {
-  status: (status) => {
-    if (status === 'winner') {
-      console.log(game.currentTurn, 'WINS!');
-      game.status.innerHTML = game.currentTurn + ' WINS!';
-
-    } else if (status === 'tie') {
-      console.log('Tie game!');
-      game.status.innerHTML = 'Tie game!';
-
-    } else {
-      game.status.innerHTML = game.currentTurn + '\'s turn';
-    }
-  }
-};
-
 var handlers = {
   handleNewGameButtonClick: (event) => {
     game.start();
@@ -136,12 +133,12 @@ var handlers = {
       game.updateBoard(row, col);
 
       if (game.isWinner()) {
-        render.status('winner');
+        game.updateStatus('winner');
       } else if (game.isTie()) {
-        render.status('tie');
+        game.updateStatus('tie');
       } else {
         game.switchTurn();
-        render.status();
+        game.updateStatus();
       }
     }
   }
