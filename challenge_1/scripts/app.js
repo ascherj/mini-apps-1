@@ -12,11 +12,11 @@ var app = {
 var game = {
   newGameButton: document.getElementById('new-game'),
   boardDiv: document.getElementById('board'),
+  boardRows: document.getElementsByTagName('tbody')[0].children,
   status: document.getElementById('status'),
-  currentTurn: 'X',
+  currentTurn: '',
   currentBoard: {},
   winner: undefined,
-
 
   start: () => {
     game.resetBoard();
@@ -24,11 +24,10 @@ var game = {
     render.status(true);
   },
   switchTurn: () => {
-    console.log('switching turn...');
     game.currentTurn = game.currentTurn === 'X' ? 'O' : 'X';
   },
   plotMove: (row, col) => {
-    var currentRow = document.getElementsByTagName('tbody')[0].children[row];
+    var currentRow = game.boardRows[row];
     var currentSquare = currentRow.children[col];
     currentSquare.innerHTML = game.currentTurn;
   },
@@ -73,8 +72,22 @@ var game = {
 
     return false;
   },
+  isTie: () => {
+    var tie = true;
+    for (var i = 0; i < 3; i++) {
+      var currentRow = game.boardRows[i];
+      for (var j = 0; j < 3; j++) {
+        var currentSquare = currentRow.children[j];
+        if (!currentSquare.innerHTML) {
+          tie = false;
+        }
+      }
+    }
+    return tie;
+  },
   resetBoard: () => {
     console.log('clearing board...');
+
     game.currentBoard = {
       0: [null, null, null],
       1: [null, null, null],
@@ -82,7 +95,7 @@ var game = {
     };
 
     for (var i = 0; i < 3; i++) {
-      var currentRow = document.getElementsByTagName('tbody')[0].children[i];
+      var currentRow = game.boardRows[i];
       for (var j = 0; j < 3; j++) {
         var currentSquare = currentRow.children[j];
         currentSquare.innerHTML = '';
@@ -93,12 +106,16 @@ var game = {
 
 var render = {
   status: (status) => {
-    console.log('rendering status...');
-    if (status) {
-      game.status.innerHTML = game.currentTurn + '\'s turn';
-    } else {
+    if (status === 'winner') {
       console.log(game.currentTurn, 'WINS!');
       game.status.innerHTML = game.currentTurn + ' WINS!';
+
+    } else if (status === 'tie') {
+      console.log('Tie game!');
+      game.status.innerHTML = 'Tie game!';
+
+    } else {
+      game.status.innerHTML = game.currentTurn + '\'s turn';
     }
   }
 };
@@ -119,10 +136,12 @@ var handlers = {
       game.updateBoard(row, col);
 
       if (game.isWinner()) {
-        render.status(false)
+        render.status('winner');
+      } else if (game.isTie()) {
+        render.status('tie');
       } else {
         game.switchTurn();
-        render.status(true);
+        render.status();
       }
     }
   }
